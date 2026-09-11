@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>Transcript</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #313338; }
+  #status {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #dbdee1; font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 15px; text-align: center; padding: 24px;
+  }
+  #frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: none; }
+</style>
+</head>
+<body>
+  <div id="status">Carregando transcript...</div>
+  <iframe id="frame" sandbox="allow-same-origin allow-popups"></iframe>
+  <script>
+    (async () => {
+      const statusEl = document.getElementById('status');
+      const frameEl = document.getElementById('frame');
+      const params = new URLSearchParams(location.search);
+      const src = params.get('src');
+
+      if (!src) {
+        statusEl.textContent = 'Nenhum transcript informado (parâmetro "src" ausente na URL).';
+        return;
+      }
+
+      let url;
+      try {
+        url = new URL(src);
+      } catch {
+        statusEl.textContent = 'URL de transcript inválida.';
+        return;
+      }
+      if (url.hostname !== 'public-blob.squarecloud.dev') {
+        statusEl.textContent = 'Origem do transcript não permitida.';
+        return;
+      }
+
+      try {
+        const response = await fetch(url.toString());
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const html = await response.text();
+        frameEl.srcdoc = html;
+        frameEl.style.display = 'block';
+        statusEl.style.display = 'none';
+      } catch (error) {
+        statusEl.textContent = 'Não consegui carregar esse transcript. Ele pode ter expirado ou o link está incorreto.';
+      }
+    })();
+  </script>
+</body>
+</html>
