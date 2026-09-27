@@ -36,7 +36,7 @@
         statusEl.textContent = 'URL de transcript inválida.';
         return;
       }
-      if (url.hostname !== 'public-blob.squarecloud.dev') {
+      if (url.hostname !== 'blob.squarecloud.dev' && url.hostname !== 'public-blob.squarecloud.dev') {
         statusEl.textContent = 'Origem do transcript não permitida.';
         return;
       }
